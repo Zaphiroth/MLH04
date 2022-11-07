@@ -1,0 +1,148 @@
+---
+title: "MLH04"
+author: "Liu Zhe"
+date: "2022-11-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = TRUE,
+  warning = FALSE
+)
+```
+
+## Environment Variables and Packages
+
+```{r}
+options(java.parameters = "-Xmx2048m",
+        stringsAsFactors = FALSE, 
+        encoding = 'UTF-8')
+
+suppressPackageStartupMessages({
+  # ISLR2
+  library(ISLR2)
+  # RG
+  library(glmnet)
+  # DM
+  library(zip)
+  library(openxlsx)
+  library(readxl)
+  library(writexl)
+  library(RcppRoll)
+  library(plyr)
+  library(stringi)
+  library(feather)
+  library(RODBC)
+  library(MASS)
+  library(car)
+  library(data.table)
+  library(lubridate)
+  library(plotly)
+  library(pROC)
+  library(tidymodels)
+  library(tidyverse)
+})
+```
+
+## College
+
+Format College dataset: 
+
+```{r}
+college.format <- College %>% 
+  mutate(Private = if_else(Private == 'Yes', 1, 0))
+```
+
+Split data into training and test set: 
+
+```{r}
+set.seed(1107)
+college.test <- dplyr::sample_frac(college.format, 0.25)
+college.train <- college.format[which(!(rownames(college.format) %in% rownames(college.test))), ]
+```
+
+Select explanatory variables by Stepwise regression: 
+
+```{r}
+college.inter <- lm(Apps ~ 1, data = college.train)
+college.all <- lm(Apps ~ ., data = college.train)
+college.both <- stats::step(college.inter, scope = formula(college.all), direction = 'both', trace = 0)
+summary(college.both)
+```
+
+Select Accept, Top10perc, Expend, Outstate, Enroll 
+
+LR model: 
+
+```{r}
+college.lr <- lm(Apps ~ Accept + Top10perc + Expend + Outstate + Enroll, data = college.train)
+summary(college.lr)
+```
+
+Test error of LR model: 
+
+```{r}
+college.test.lr <- college.test %>% 
+  mutate(Apps_pred = predict(college.lr, newdata = college.test))
+
+(with(college.test.lr, mse.lr <- mean(Apps - Apps_pred) ^ 2))
+```
+
+Best lambda for ridge regression model: 
+
+```{r}
+college.ridge.cv <- cv.glmnet(x = as.matrix(select(college.train, -Apps)), 
+                              y = college.train$Apps, 
+                              alpha = 0)
+
+(college.ridge.lambda <- college.ridge.cv$lambda.min)
+```
+
+Ridge regression model: 
+
+```{r}
+college.ridge <- glmnet(x = as.matrix(select(college.train, -Apps)), 
+                        y = college.train$Apps, 
+                        alpha = 0, lambda = college.ridge.lambda)
+coef(college.ridge)
+```
+
+Test error of ridge regression model: 
+
+```{r}
+college.test.ridge <- college.test %>% 
+  mutate(Apps_pred = predict(college.ridge, newx = as.matrix(select(college.test, -Apps))))
+
+(with(college.test.ridge, mse.ridge <- mean(Apps - Apps_pred) ^ 2))
+```
+
+Best lambda for LASSO regression: 
+
+```{r}
+college.lasso.cv <- cv.glmnet(x = as.matrix(select(college.train, -Apps)), 
+                              y = college.train$Apps, 
+                              alpha = 1)
+
+(college.lasso.lambda <- college.lasso.cv$lambda.min)
+```
+
+LASSO regression model: 
+
+```{r}
+college.lasso <- glmnet(x = as.matrix(select(college.train, -Apps)), 
+                        y = college.train$Apps, 
+                        alpha = 1, lambda = college.lasso.lambda)
+coef(college.lasso)
+```
+
+Test error of LASSO regression: 
+
+```{r}
+college.test.lasso <- college.test %>% 
+  mutate(Apps_pred = predict(college.lasso, newx = as.matrix(select(college.test, -Apps))))
+
+(with(college.test.lasso, mse.lasso <- mean(Apps - Apps_pred) ^ 2))
+```
+
