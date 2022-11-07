@@ -72,7 +72,7 @@ college.both <- stats::step(college.inter, scope = formula(college.all), directi
 summary(college.both)
 ```
 
-Select Accept, Top10perc, Expend, Outstate, Enroll 
+Select Accept, Top10perc, Expend, Outstate, Enroll. 
 
 LR model: 
 

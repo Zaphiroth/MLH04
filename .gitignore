@@ -2,3 +2,15 @@
 .Rhistory
 .RData
 .Ruserdata
+
+cor.csv
+
+*.aux
+
+*.fdb_latexmk
+
+*.fls
+
+*.log
+
+*.gz

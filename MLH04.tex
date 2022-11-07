@@ -1,0 +1,108 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.0cm,bottom=2.5cm}
+\usepackage[english]{babel}
+\usepackage{amsmath,amsthm}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage[longend,ruled,linesnumbered]{algorithm2e}
+\usepackage{siunitx}
+\usepackage{fancyhdr}
+\usepackage{ctex}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{longtable}
+
+\begin{document}
+    \title{\heiti{《机器学习》课程第 {$4$} 次作业}}
+    \date{}
+    \author{姓名：\underline{刘哲}~~~~~~学号：\underline{2022103691}~~~~~~}
+    \maketitle
+    \section{\heiti{第5题}}
+    \vspace{10pt}
+    \subsubsection*{a}
+    岭回归最优化问题的目标函数为
+    \begin{equation}
+        Obj_{ridge}=\sum_{i=1}^2\left(y_i-\beta_0-\beta_1x_{i1}-\beta_2x_{i2}\right)^2+\lambda\left(\beta_1^2+\beta_2^2\right)
+    \end{equation}
+    \subsubsection*{b}
+    令
+    \begin{gather}
+        X=\begin{bmatrix}
+            x_{11} & x_{12}\\
+            x_{21} & x_{22}
+        \end{bmatrix}=\begin{bmatrix}
+            a & a\\
+            -a & -a
+        \end{bmatrix},\qquad Y=\begin{bmatrix}
+            y_1\\
+            y_2
+        \end{bmatrix}=\begin{bmatrix}
+            b\\
+            -b
+        \end{bmatrix}
+    \end{gather}
+    其中，$a\neq0$，$b\neq0$。岭回归的参数估计应满足使目标函数 $Obj_{ridge}$ 达到最小。令 $Obj_{ridge}$ 分别对$\beta_0$、$\beta_1$和$\beta_2$求偏导，使偏导数等于零，得到
+    \begin{equation}
+        \begin{cases}
+            \frac{\partial Obj_{ridge}}{\partial\beta_0}=-2\left(b-\beta_0-a\beta_1-a\beta_2\right)-2\left(b-\beta_0+a\beta_1+a\beta_2\right)=0\\
+            \frac{\partial Obj_{ridge}}{\partial\beta_1}=-2a\left(b-\beta_0-a\beta_1-a\beta_2\right)+2a\left(b-\beta_0+a\beta_1+a\beta_2\right)+2\lambda\beta_1=0\\
+            \frac{\partial Obj_{ridge}}{\partial\beta_2}=-2a\left(b-\beta_0-a\beta_1-a\beta_2\right)+2a\left(b-\beta_0+a\beta_1+a\beta_2\right)+2\lambda\beta_2=0
+        \end{cases}
+    \end{equation}
+    解得
+    \begin{equation}
+        2\lambda\beta_1=2\lambda\beta_2
+    \end{equation}
+    因为 $\lambda\neq 0$，所以有 $\hat{\beta_1}=\hat{\beta_2}$。
+    \subsubsection*{c}
+    LASSO回归最优化问题的目标函数为
+    \begin{equation}
+        Obj_{LASSO}=\sum_{i=1}^2\left(y_i-\beta_0-\beta_1x_{i1}-\beta_2x_{i2}\right)^2+\lambda\left(\left|\beta_1\right|+\left|\beta_2\right|\right)
+    \end{equation}
+    \subsubsection*{d}
+    LASSO回归的参数估计应满足使目标函数 $Obj_{LASSO}$ 达到最小。令 $Obj_{LASSO}$ 分别对$\beta_0$、$\beta_1$和$\beta_2$求偏导，使偏导数等于零，得到
+    \begin{equation}
+        \begin{cases}
+            \frac{\partial Obj_{LASSO}}{\partial\beta_0}=-2\left(b-\beta_0-a\beta_1-a\beta_2\right)-2\left(b-\beta_0+a\beta_1+a\beta_2\right)=0\\
+            \frac{\partial Obj_{LASSO}}{\partial\beta_1}=-2a\left(b-\beta_0-a\beta_1-a\beta_2\right)+2a\left(b-\beta_0+a\beta_1+a\beta_2\right)+\lambda\frac{\partial\left|\beta_1\right|}{\partial\beta_1}=0\\
+            \frac{\partial Obj_{LASSO}}{\partial\beta_2}=-2a\left(b-\beta_0-a\beta_1-a\beta_2\right)+2a\left(b-\beta_0+a\beta_1+a\beta_2\right)+\lambda\frac{\partial\left|\beta_2\right|}{\partial\beta_2}=0
+        \end{cases}
+    \end{equation}
+    因为 $\frac{\partial\left|\beta_1\right|}{\partial\beta_1}$ 和 $\frac{\partial\left|\beta_2\right|}{\partial\beta_2}$ 的值取决于 $\beta_1$ 和 $\beta_2$ 的正负号，
+    所以 $\hat{\beta_1}$ 和 $\hat{\beta_2}$ 不唯一，且满足 $\left|\hat{\beta_1}\right|=\left|\hat{\beta_2}\right|$。
+    \section{\heiti{第9题}}
+    \vspace{10pt}
+    \subsubsection*{a}
+    将 College 数据集中的 Private 变量转化为哑变量，令1表示$Yes$，0表示$No$。按 3:1 的比例将数据集划分为训练集和测试集，其中训练集包含583行数据，测试集包含194行数据。
+    \subsubsection*{b}
+    通过逐步选择法筛选模型的解释变量，结果如下：
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.25]{Stepwise.png}
+    \end{figure}
+    选取显著性水平最高的5个解释变量 Accept、Top10perc、Expend、Outstate、 Enroll 建立线性回归模型，结果如下：
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.25]{Linear.png}
+    \end{figure}
+    其中模型参数均显著。用该模型对测试集数据进行预测，得到测试误差为1232.63。
+    \subsubsection*{c}
+    使用10折交叉验证法确定岭回归的最佳 $\lambda=368.2153$，建立岭回归模型，系数估计结果如下：
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.25]{Ridge.png}
+    \end{figure}
+    用该模型对测试集数据进行预测，得到测试误差为3763.05。
+    \subsubsection*{d}
+    使用10折交叉验证法确定LASSO回归的最佳 $\lambda=29.1804$，建立LASSO回归模型，系数估计结果如下：
+    \begin{figure}[H]
+        \centering
+        \includegraphics[scale=0.25]{LASSO.png}
+    \end{figure}
+    用该模型对测试集数据进行预测，得到测试误差为1405.266。
+\end{document}
