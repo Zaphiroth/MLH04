@@ -73,8 +73,20 @@
             \frac{\partial Obj_{LASSO}}{\partial\beta_2}=-2a\left(b-\beta_0-a\beta_1-a\beta_2\right)+2a\left(b-\beta_0+a\beta_1+a\beta_2\right)+\lambda\frac{\partial\left|\beta_2\right|}{\partial\beta_2}=0
         \end{cases}
     \end{equation}
-    因为 $\frac{\partial\left|\beta_1\right|}{\partial\beta_1}$ 和 $\frac{\partial\left|\beta_2\right|}{\partial\beta_2}$ 的值取决于 $\beta_1$ 和 $\beta_2$ 的正负号，
-    所以 $\hat{\beta_1}$ 和 $\hat{\beta_2}$ 不唯一，且满足 $\left|\hat{\beta_1}\right|=\left|\hat{\beta_2}\right|$。
+    解得
+    \begin{equation}
+        \lambda\frac{\partial\left|\beta_1\right|}{\partial\beta_1}=\lambda\frac{\partial\left|\beta_2\right|}{\partial\beta_2}
+    \end{equation}
+    因为 $\lambda\neq 0$，则有 $\frac{\partial\left|\beta_1\right|}{\partial\beta_1}=\frac{\partial\left|\beta_2\right|}{\partial\beta_2}$，其中
+    \begin{equation}
+        \frac{\partial\left|\beta_i\right|}{\partial\beta_i}=
+        \begin{cases}
+            1,&\beta_i>0\\
+            -1,&\beta_i<0
+        \end{cases}
+        ,\qquad i=1,2
+    \end{equation}
+    即偏导数的值取决于 $\beta_1$ 和 $\beta_2$ 的正负号，因此 $\hat{\beta_1}$ 和 $\hat{\beta_2}$ 不唯一，且只需满足 $\hat{\beta_1}\hat{\beta_2}>0$（$\hat{\beta_1}$ 和 $\hat{\beta_2}$ 同号）。
     \section{\heiti{第9题}}
     \vspace{10pt}
     \subsubsection*{a}
